@@ -6,7 +6,8 @@
             //add validators here
             name: {value:""},
             apikey: {value: "BvHxrLYriSUI5aBiGKc7QbMriJYrH3vIGm0nVlkPxn6nm2GX"},
-	          feedid: {value:"2072748382"}
+	          feedid: {value:"2072748382"},
+            variable: {value: "Optical-Agile"}
         },
         inputs:1,
         outputs:1,
@@ -25,11 +26,20 @@
 
     <div class="form-row">
       <label for="node-input-feedid"><i class="pie-chart"></i> Feed-ID</label>
-      <input type="text" id="node-input-feedid" placeholder='2072748382'>
+      <input type="text" id="node-input-feedid" placeholder="2072748382">
+    </div>
+
+    <div class="form-row">
+      <label for="node-input-variable"><i class="pie-chart"></i> Variable-Name</label>
+      <input type="text" id="node-input-variable" placeholder="Optical-Agile">
     </div>
 
 </script>
 
 <script type="text/x-red" data-help-name="send-data">
-    <p>This is the help text to push data to the Xively cloud platform</p>
+    <p>This is a node to push data into a Xively feed. The user needs to input the following values:</p>
+    <p><b>feedid:</b> which defines the Feed generated from a particular device. </p>
+    <p><b>apikey:</b> the apikey for the particular feed specified. </p>
+    <p><b>variable:</b> the name of the variable to which the user wants to push the data. </p>
+    <p>The output of the node returns 200 for a successful post with the value of the variable or returns the error code.</p>
 </script>

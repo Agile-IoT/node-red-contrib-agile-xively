@@ -11,6 +11,7 @@ module.exports = function(RED) {
         //Create the URL from the data of the config nodes
         node.apikey=config.apikey;
         node.feedid=config.feedid;
+        node.variable=config.variable;
         var url='https://api.xively.com/v2/feeds/'+node.feedid+'.json'
         this.on('input', function(msg) {
         //Convert the timestamp from Epoch to ISO8601 format specified by Xively
@@ -19,7 +20,7 @@ module.exports = function(RED) {
         d('Trying to send value '+JSON.parse(msg.payload).value+' with timestamp '+timestamp+' of type '+JSON.parse(msg.payload).componentID)
 
         //Create message body by including the value from the sensor and the timestamp of the data
-        var bodyString='{"version":"1.0.0","datastreams" : [ {"id" : "Optical-Agile","datapoints":[{"at":"'+timestamp+'","value":"'+JSON.parse(msg.payload).value+'"}]}]}'
+        var bodyString='{"version":"1.0.0","datastreams" : [ {"id" : "'+node.variable+'","datapoints":[{"at":"'+timestamp+'","value":"'+JSON.parse(msg.payload).value+'"}]}]}'
 
         //Inside options for body only Strings are accepted, JSON objects are not accepted, thus the request is created as a String above
         //Options are used to set the URL, the method for the message and the security for the header
