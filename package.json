@@ -1,5 +1,5 @@
 {
-  "name": "node-red-contrib-send-data",
+    "name": "node-red-contrib-agile-xively",
   "version": "0.0.1",
   "description": "A sample node in Node-Red to push data to Xively",
   "main": "index.js",

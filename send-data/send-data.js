@@ -14,6 +14,7 @@ module.exports = function(RED) {
         node.variable=config.variable;
         var url='https://api.xively.com/v2/feeds/'+node.feedid+'.json'
         this.on('input', function(msg) {
+        node.status({fill:"blue",shape:"ring",text:"sending"});
         //Convert the timestamp from Epoch to ISO8601 format specified by Xively
         var timestamp = new Date(JSON.parse(msg.payload).lastUpdate);
 
@@ -39,10 +40,26 @@ module.exports = function(RED) {
 
         request(options,function(err,res,body){
         if(err)
-        console.log(err);
-        else console.log(res.statusCode);
-        msg.payload=(res.statusCode===200)?'Successfully added value '+JSON.parse(msg.payload).value+' to feed':'Error with code '+res.statusCode;
-        node.send(msg);
+        {
+          node.status({fill:"red",shape:"ring",text:"disconnected"});
+          //node.warn("Error in sending the data",err);
+        }
+        else
+        {
+          console.log(res.statusCode+' '+res.body);
+          if(res.statusCode===200)
+          {
+            msg.payload='The value '+JSON.parse(msg.payload).value+' was added to channel: '+node.variable;
+            node.status({fill:"green",shape:"dot",text:"sent"});
+          }
+          if(res.statusCode===403)
+          {
+          msg.payload='Error code is '+res.statusCode+': '+JSON.parse(res.body).title
+          node.status({fill:"yellow", shape:"ring", text:"Unaccepted Rate"});
+          }
+  //      msg.payload=(res.statusCode===200)?'Successfully added value '+JSON.parse(msg.payload).value+' to feed':'Error with code '+res.statusCode;
+          node.send(msg);
+        }
         })
         });
 
