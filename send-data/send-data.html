@@ -33,8 +33,15 @@
 
 <script type="text/x-red" data-help-name="send-data">
     <p>This is a node to push data into a Xively feed. The user needs to input the following values:</p>
+    <p><b>Through the Config Node</b></p>
     <p><b>feedid:</b> which defines the Feed generated from a particular device. </p>
     <p><b>apikey:</b> the apikey for the particular feed specified. </p>
+    <p><b>Through the editor</b></p>
     <p><b>variable:</b> the name of the variable to which the user wants to push the data. </p>
+    <p>The node takes the following parameters as input inside the <b>msg.payload</b></p>
+    <p><b>DeviceID: </b>The ID of the device sending the data, alphanumeric</p>
+    <p><b>ComponentID: </b>The ID of the component from which the data is read, alphanumeric</p>
+    <p><b>LastUpdate: </b>The timestamp of the data in Epoch format (seconds), number</p>
+    <p><b>Value: </b>The value of the reading of the componenet received</p>
     <p>The output of the node returns 200 for a successful post with the value of the variable or returns the error code.</p>
 </script>
