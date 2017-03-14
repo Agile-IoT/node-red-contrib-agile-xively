@@ -5,9 +5,10 @@
         defaults: {
             //add validators here
             name: {value:""},
-            apikey: {value: "BvHxrLYriSUI5aBiGKc7QbMriJYrH3vIGm0nVlkPxn6nm2GX"},
-	          feedid: {value:"2072748382"},
-            variable: {value: "Optical-Agile"}
+            server: {value:"", type:"xively-config"},
+            //apikey: {value: "",validate: function(key){return (key.length===48)}},
+	          //feedid: {value:"",validate: RED.validators.number()},
+            variable: {value: ""}
         },
         inputs:1,
         outputs:1,
@@ -20,15 +21,9 @@
 
 <script type="text/x-red" data-template-name="send-data">
     <div class="form-row">
-        <label for="node-input-apikey"><i class="key"></i> API-Key</label>
-        <input type="text" id="node-input-apikey" placeholder="BvHxrLYriSUI5aBiGKc7QbMriJYrH3vIGm0nVlkPxn6nm2GX">
+    <label for="node-input-server"><i class="fa fa-globe"></i> Server</label> 
+    <input type="text" id="node-input-server">
     </div>
-
-    <div class="form-row">
-      <label for="node-input-feedid"><i class="pie-chart"></i> Feed-ID</label>
-      <input type="text" id="node-input-feedid" placeholder="2072748382">
-    </div>
-
     <div class="form-row">
       <label for="node-input-variable"><i class="pie-chart"></i> Variable-Name</label>
       <input type="text" id="node-input-variable" placeholder="Optical-Agile">

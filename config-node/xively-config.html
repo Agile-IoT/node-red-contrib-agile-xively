@@ -1,0 +1,25 @@
+<script type="text/javascript">
+    RED.nodes.registerType('xively-config',{
+        category: 'config',
+        defaults: {
+            feedid: {required:true,validate: RED.validators.number()},
+            apikey: {value:"",required:true,validate:function(key){
+              return(key.length===48);
+            }}
+        },
+        label: function() {
+            return (this.name||'Xively Config');
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="xively-config">
+    <div class="form-row">
+        <label for="node-config-input-feedid"><i class="i-cursor"></i> Feed-ID</label>
+        <input type="text" id="node-config-input-feedid">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-apikey"><i class="key"></i> API-Key</label>
+        <input type="text" id="node-config-input-apikey">
+    </div>
+</script>

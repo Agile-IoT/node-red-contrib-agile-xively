@@ -11,7 +11,8 @@
   ],
   "node-red": {
     "nodes": {
-      "send-data": "send-data/send-data.js"
+      "send-data": "send-data/send-data.js",
+      "xively-config": "config-node/xively-config.js"
     }
   },
   "author": "Koustabh Dolui",

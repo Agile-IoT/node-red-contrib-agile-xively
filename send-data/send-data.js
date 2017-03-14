@@ -7,14 +7,44 @@ module.exports = function(RED) {
     function sendData(config) {
         RED.nodes.createNode(this,config);
         var node = this;
-
+        node.status();
         //Create the URL from the data of the config nodes
-        node.apikey=config.apikey;
-        node.feedid=config.feedid;
+        node.server = RED.nodes.getNode(config.server);
+        node.apikey=node.server.apikey;
+        node.feedid=node.server.feedid;
         node.variable=config.variable;
         var url='https://api.xively.com/v2/feeds/'+node.feedid+'.json'
+
+        //event handler for receipt of a new message from the Read node
         this.on('input', function(msg) {
+
+        //Checking the input message for requiredProperties
+
+        //Extract the keys in the input message payload
+        var msgKeys=Object.keys(JSON.parse(msg.payload));
+
+        //requiredProperties for the incoming message
+        var requiredProperties=['value','deviceID','componentID','lastUpdate'];
+        var missingProperties=[];
+
+        //check for all requiredProperties
+        for (var index in requiredProperties)
+        {
+        if(msgKeys.indexOf(requiredProperties[index])===-1)
+          missingProperties.push(requiredProperties[index]);
+        }
+
+        //if all the properties are not present throw warning
+        if (missingProperties.length!=0)
+        {
+          node.status({fill:"red",shape:"ring",text:"Missing parameters"});
+          RED.log.warn('Missing property in send-data node input: '+missingProperties);
+          return;
+        }
+
+        //If all properties are present change status of node to sending
         node.status({fill:"blue",shape:"ring",text:"sending"});
+
         //Convert the timestamp from Epoch to ISO8601 format specified by Xively
         var timestamp = new Date(JSON.parse(msg.payload).lastUpdate);
 
