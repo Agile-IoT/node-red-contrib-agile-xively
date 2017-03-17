@@ -13,7 +13,8 @@ module.exports = function(RED) {
         node.apikey=node.server.apikey;
         node.feedid=node.server.feedid;
         node.variable=config.variable;
-        var url='https://api.xively.com/v2/feeds/'+node.feedid+'.json'
+        var url='http://api.xively.com/v2/feeds/'+node.feedid+'.json'
+
 
         //event handler for receipt of a new message from the Read node
         this.on('input', function(msg) {
