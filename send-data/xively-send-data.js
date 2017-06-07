@@ -218,5 +218,5 @@ module.exports = function(RED) {
 
 
       }
-      RED.nodes.registerType("send-data",sendData);
+      RED.nodes.registerType("xively-send-data",sendData);
     }
