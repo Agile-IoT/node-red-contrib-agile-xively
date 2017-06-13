@@ -105,8 +105,9 @@ module.exports = function(RED) {
           {
             if(res.statusCode===200)
             {
-                var credentials = JSON.parse(res.body)
-                pushData(node,credentials.apikey,credentials.feed_id)
+                var credentials = JSON.parse(res.body);
+                pushData(node,credentials.apikey,credentials.feed_id);
+                storeCredentials(msg, credentials);
             }
 
             else if (res.statusCode===403)
@@ -199,6 +200,28 @@ module.exports = function(RED) {
           })
           });
 
+
+      }
+
+      var storeCredentials = function(msg,credentials){
+        var token = msg.token;
+        var api = 'http://192.168.8.61:8000'
+        var idmurl = 'http://192.168.8.61:3000';
+        var agile = require('agile-sdk')({
+        api: api,
+        idm: idmurl,
+        token: token
+      });
+      agile.idm.entity.setAttribute({
+        entityId: msg.userInfo.id,
+        entityType: 'user',
+        attributeType: 'credentials',
+        attributeValue: {'xivelymaster':msg.credentials.xively.xivelymaster, 'xivelyproduct':msg.credentials.xively.xivelyproduct, 'xivelysecret':msg.credentials.xively.xivelysecret,'apikey':credentials.apikey,'feedid':credentials.feed_id}
+      }).then(function(data) {
+       d("Stored credentials: "+JSON.stringify(data));
+      }).catch(function(err) {
+      d("Failed to store credentials ", err)
+      });
 
       }
       RED.nodes.registerType("xively-send-data",sendData);

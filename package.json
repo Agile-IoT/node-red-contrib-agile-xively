@@ -18,6 +18,7 @@
   "author": "Koustabh Dolui",
   "license": "ISC",
   "dependencies": {
+    "agile-sdk": "^0.4.4",
     "debug": "^2.6.1",
     "request": "^2.81.0"
   }
