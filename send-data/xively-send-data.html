@@ -8,7 +8,8 @@
             server: {value:"", type:"xively-config"},
             //apikey: {value: "",validate: function(key){return (key.length===48)}},
 	          //feedid: {value:"",validate: RED.validators.number()},
-            variable: {value: ""}
+            variable: {value: ""},
+            serial:{value: ""}
         },
         inputs:1,
         outputs:1,
@@ -27,6 +28,10 @@
     <div class="form-row">
       <label for="node-input-variable"><i class="pie-chart"></i> Variable-Name</label>
       <input type="text" id="node-input-variable" placeholder="Optical-Agile">
+    </div>
+    <div class="form-row">
+      <label for="node-input-serial"><i class="microchip"></i> Variable-Name</label>
+      <input type="text" id="node-input-serial" placeholder="agile-XXXX">
     </div>
 
 </script>

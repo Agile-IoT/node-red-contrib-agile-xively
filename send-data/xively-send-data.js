@@ -22,32 +22,25 @@ module.exports = function(RED) {
         pushData(node,node.apikey,node.feedid);
       }
 
-      else if (fs.existsSync(WORK_DIR+"/xivelycredentials.txt"))
+      else
       {
         d('Reading the API Key and the Feed ID from the locally stored file')
-        fs.readFile(WORK_DIR+"/xivelycredentials.txt", (err, data) => {
-        if (err) throw err;
-        else {
-            var credentials = JSON.parse(data)
-            d('Read the contents from the file'+data)
-            pushData(node,credentials.apikey,credentials.feed_id)
-        }
-        });
+        node.once('input', function(msg){
+            if((msg.my_credentials.xively.apikey)&&(msg.my_credentials.xively.feedid))
+            {
+              d('Credentials in msg')
+              pushData(node,msg.my_credentials.xively.apikey,msg.my_credentials.xively.feedid);
+            }
+            else if((msg.my_credentials.xively.xivelymaster)&&(msg.my_credentials.xively.xivelyproduct)&&(msg.my_credentials.xively.xivelysecret))
+            {
+              d('Credentials not in msg')
+              //preRegister(node,msg)
+            }
+        })
+
+
+
       }
-
-
-      // else if((node.context().global.get(xivelyapikey))&&(node.context().global.get(xivelyfeedid)))
-      // {
-      //     d('Using the settings from the global configuration')
-      //     pushData(node,node.context().global.get(xivelyapikey),node.context().global.get(xivelyapikey));
-      // }
-
-      else {
-        d("Node conifguration not found")
-        preRegister(node);
-      }
-
-
 
     }
 
