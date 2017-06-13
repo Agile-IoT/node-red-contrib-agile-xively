@@ -11,6 +11,7 @@ module.exports = function(RED) {
       RED.nodes.createNode(this,config);
       var node = this;
       node.variable=config.variable;
+      node.serial=config.serial;
       node.status();
       //Get the configuration node
       node.server = RED.nodes.getNode(config.server);
@@ -24,17 +25,16 @@ module.exports = function(RED) {
 
       else
       {
-        d('Reading the API Key and the Feed ID from the locally stored file')
         node.once('input', function(msg){
-            if((msg.my_credentials.xively.apikey)&&(msg.my_credentials.xively.feedid))
+            if((msg.credentials.xively.apikey)&&(msg.credentials.xively.feedid))
             {
-              d('Credentials in msg')
-              pushData(node,msg.my_credentials.xively.apikey,msg.my_credentials.xively.feedid);
+              d('Reading the API Key and the Feed ID from the msg object')
+              pushData(node,msg.credentials.xively.apikey,msg.credentials.xively.feedid);
             }
-            else if((msg.my_credentials.xively.xivelymaster)&&(msg.my_credentials.xively.xivelyproduct)&&(msg.my_credentials.xively.xivelysecret))
+            else if((msg.credentials.xively.xivelymaster)&&(msg.credentials.xively.xivelyproduct)&&(msg.credentials.xively.xivelysecret))
             {
-              d('Credentials not in msg')
-              //preRegister(node,msg)
+              d('Pre-registering the device')
+              preRegister(node,msg)
             }
         })
 
@@ -44,92 +44,82 @@ module.exports = function(RED) {
 
     }
 
-    var preRegister = function(node){
-        var globalContext = node.context().global;
-        if((globalContext.get('xivelymaster')!==undefined)&&(globalContext.get('xivelyproduct')!==undefined)&&(globalContext.get('xivelyserial')!==undefined))
-        {
-          var preRegistrationUrl='http://api.xively.com/v2/products/'+globalContext.get('xivelyproduct')+'/devices';
-          var preRegistrationBody='{"devices": [{"serial": "'+globalContext.get('xivelyserial')+'"}]}';
+    var preRegister = function(node,msg){
+
+      var preRegistrationUrl='http://api.xively.com/v2/products/'+msg.credentials.xively.xivelyproduct+'/devices';
+      d(preRegistrationUrl)
+      var preRegistrationBody='{"devices": [{"serial": "'+node.serial+'"}]}';
+      d(preRegistrationBody)
+      var options = {
+      url: preRegistrationUrl,
+      method: 'POST',
+      headers: {
+        'User-Agent': 'request',
+        'X-ApiKey':msg.credentials.xively.xivelymaster,
+        'Content-Type':'application/json'
+      },
+      body: preRegistrationBody
+    };
+
+
+
+    request(options,function(err,res,body){
+    if(err)
+    {
+      node.warn("Error in preRegistration",err);
+    }
+    else
+    {
+      d(res.statusCode+' '+res.body);
+      if(res.statusCode===201)
+      {
+        d("Device was pre-registered")
+        activateDevice(node,msg);
+      }
+    }
+    })
+
+  }
+
+  var activateDevice = function(node,msg) {
+          var activationKey = crypto.createHmac('sha1', new Buffer(msg.credentials.xively.xivelysecret,'hex')).update(node.serial,'utf8').digest('hex');
+          var activationUrl='http://api.xively.com/v2/devices/'+activationKey+'/activate'
           var options = {
-          url: preRegistrationUrl,
-          method: 'POST',
+          url: activationUrl,
+          method: 'GET',
           headers: {
             'User-Agent': 'request',
-            'X-ApiKey':globalContext.get('xivelymaster'),
             'Content-Type':'application/json'
           },
-          body: preRegistrationBody
+          body: null
         };
 
 
 
-        request(options,function(err,res,body){
-        if(err)
-        {
-          node.warn("Error in preRegistration",err);
-        }
-        else
-        {
-          d(res.statusCode+' '+res.body);
-          if(res.statusCode===201)
+          request(options,function(err,res,body){
+          if(err)
           {
-            d("Device was pre-registered")
-            activateDevice(node);
+            node.warn("Error in activation",err);
           }
-        }
-        })
-
-        }
-      }
-
-      var activateDevice = function(node) {
-          var globalContext = node.context().global;
-          if(globalContext.get('xivelysecret')!==undefined)
+          else
           {
-              var activationKey = crypto.createHmac('sha1', new Buffer(globalContext.get('xivelysecret'),'hex')).update(globalContext.get('xivelyserial'),'utf8').digest('hex');
-              var activationUrl='http://api.xively.com/v2/devices/'+activationKey+'/activate'
-              var options = {
-              url: activationUrl,
-              method: 'GET',
-              headers: {
-                'User-Agent': 'request',
-                'Content-Type':'application/json'
-              },
-              body: null
-            };
+            if(res.statusCode===200)
+            {
+                var credentials = JSON.parse(res.body)
+                pushData(node,credentials.apikey,credentials.feed_id)
+            }
 
-
-
-              request(options,function(err,res,body){
-              if(err)
-              {
-                node.warn("Error in activation",err);
-              }
-              else
-              {
-                if(res.statusCode===200)
-                {
-                    var credentials = JSON.parse(res.body)
-                    d("Device was activated with key = "+credentials.apikey+" and feedid = "+credentials.feed_id);
-                    fs.writeFile(WORK_DIR+"/xivelycredentials.txt", res.body, (err) => {
-                      if (err) throw err;
-                      else d('Written new credentials to file');
-                    });
-                    pushData(node,credentials.apikey,credentials.feed_id)
-                }
-
-                else if (res.statusCode===403)
-                {
-                    d("Device already activated")
-                    node.warn("Device was already registered")
-                }
-              }
-              })
+            else if (res.statusCode===403)
+            {
+                d("Device already activated")
+                node.warn("Device was already registered")
+            }
           }
-      }
+          })
 
+  }
       var pushData = function (node,apikey,feedid){
-
+          d('PushData called with '+apikey+' '+feedid);
           var url='http://api.xively.com/v2/feeds/'+feedid+'.json'
           //event handler for receipt of a new message from the Read node
           node.on('input', function(msg) {
