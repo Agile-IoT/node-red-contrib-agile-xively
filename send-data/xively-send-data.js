@@ -205,8 +205,8 @@ module.exports = function(RED) {
 
       var storeCredentials = function(msg,credentials){
         var token = msg.token;
-        var api = 'http://192.168.8.61:8000'
-        var idmurl = 'http://192.168.8.61:3000';
+        var api = 'http://agilegw.local:8000'
+        var idmurl = 'http://agilegw.local:3000';
         var agile = require('agile-sdk')({
         api: api,
         idm: idmurl,
@@ -216,7 +216,7 @@ module.exports = function(RED) {
         entityId: msg.userInfo.id,
         entityType: 'user',
         attributeType: 'credentials',
-        attributeValue: {'xivelymaster':msg.credentials.xively.xivelymaster, 'xivelyproduct':msg.credentials.xively.xivelyproduct, 'xivelysecret':msg.credentials.xively.xivelysecret,'apikey':credentials.apikey,'feedid':credentials.feed_id}
+        attributeValue: {'xively':{'xivelymaster':msg.credentials.xively.xivelymaster, 'xivelyproduct':msg.credentials.xively.xivelyproduct, 'xivelysecret':msg.credentials.xively.xivelysecret,'apikey':credentials.apikey,'feedid':credentials.feed_id}}
       }).then(function(data) {
        d("Stored credentials: "+JSON.stringify(data));
       }).catch(function(err) {
