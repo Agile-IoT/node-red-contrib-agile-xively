@@ -76,6 +76,13 @@ module.exports = function(RED) {
         d("Device was pre-registered")
         activateDevice(node,msg);
       }
+
+      else if (res.statusCode===401)
+      {
+        d("Credentials are not sufficient to perform operation");
+        node.warn("Credentials are not sufficient to perform operation");
+        node.status({fill:"red", shape:"ring", text:"Insufficient credentials"});
+      }
     }
     })
 
@@ -107,13 +114,15 @@ module.exports = function(RED) {
             {
                 var credentials = JSON.parse(res.body);
                 pushData(node,credentials.apikey,credentials.feed_id);
-                storeCredentials(msg, credentials);
+                storeCredentials(node, msg, credentials);
+                node.status({fill:"green", shape:"ring", text:"Device activated"});
             }
 
             else if (res.statusCode===403)
             {
                 d("Device already activated")
-                node.warn("Device was already registered")
+                node.warn("Device was already activated")
+                node.status({fill:"yellow", shape:"ring", text:"Device already activated"});
             }
           }
           })
@@ -203,25 +212,53 @@ module.exports = function(RED) {
 
       }
 
-      var storeCredentials = function(msg,credentials){
+      var storeCredentials = function(node, msg,credentials){
+        //Get the name of the host and store it in hostname
+        var fs = require('fs');
+        var hostname = fs.readFileSync('/etc/hostname');
+        hostname = hostname.toString().trim();
+
+        //check if AGILE_HOST is defined, then use it, else use the hostname in the URLs
+        if(process.env.AGILE_HOST){
+          var api = "http://"+process.env.AGILE_HOST+":8000";
+          var idmurl = "http://"+process.env.AGILE_HOST+":3000";
+        } else if(hostname){
+          var api = "http://"+hostname+".local:8000";
+          var idmurl = "http://"+hostname+".local:3000";
+        }
         var token = msg.token;
+<<<<<<< HEAD
         var api = 'http://192.168.8.61:8000'
         var idmurl = 'http://192.168.8.61:3000';
+=======
+>>>>>>> 0093ac9e643c2169886b3c9d3820404678bfb555
         var agile = require('agile-sdk')({
         api: api,
         idm: idmurl,
         token: token
       });
+
+
+
+      try
+      {
       agile.idm.entity.setAttribute({
-        entityId: msg.userInfo.id,
-        entityType: 'user',
-        attributeType: 'credentials',
-        attributeValue: {'xively':{'xivelymaster':msg.credentials.xively.xivelymaster, 'xivelyproduct':msg.credentials.xively.xivelyproduct, 'xivelysecret':msg.credentials.xively.xivelysecret,'apikey':credentials.apikey,'feedid':credentials.feed_id}}
+          entityId: msg.userInfo.id,
+          entityType: 'user',
+          attributeType: 'credentials',
+          attributeValue: {'xively':{'xivelymaster':msg.credentials.xively.xivelymaster, 'xivelyproduct':msg.credentials.xively.xivelyproduct, 'xivelysecret':msg.credentials.xively.xivelysecret,'apikey':credentials.apikey,'feedid':credentials.feed_id}}
+
       }).then(function(data) {
        d("Stored credentials: "+JSON.stringify(data));
       }).catch(function(err) {
       d("Failed to store credentials ", err)
       });
+      }
+
+      catch(err)
+      {
+        node.error(err);
+      }
 
       }
       RED.nodes.registerType("xively-send-data",sendData);
