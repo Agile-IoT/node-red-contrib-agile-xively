@@ -227,11 +227,6 @@ module.exports = function(RED) {
           var idmurl = "http://"+hostname+".local:3000";
         }
         var token = msg.token;
-<<<<<<< HEAD
-        var api = 'http://192.168.8.61:8000'
-        var idmurl = 'http://192.168.8.61:3000';
-=======
->>>>>>> 0093ac9e643c2169886b3c9d3820404678bfb555
         var agile = require('agile-sdk')({
         api: api,
         idm: idmurl,
