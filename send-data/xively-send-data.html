@@ -21,6 +21,7 @@
 </script>
 
 <script type="text/x-red" data-template-name="xively-send-data">
+    <p>For an active device, enter <span style="color: #ff0000; background-color: #ccffff;">FeedID</span> and <span style="background-color: #ccffff; color: #ff0000;">API Key</span>, with variable name.</p>
     <div class="form-row">
     <label for="node-input-server"><i class="fa fa-globe"></i> Server</label>
     <input type="text" id="node-input-server">
@@ -29,6 +30,7 @@
       <label for="node-input-variable"><i class="fa fa-pie-chart"></i> Variable-Name</label>
       <input type="text" id="node-input-variable" placeholder="Optical-Agile">
     </div>
+    <p>Enter a unique <span style="color: #ff0000; background-color: #ccffff;">serial number</span> to register new device.</p>
     <div class="form-row">
       <label for="node-input-serial"><i class="fa fa-microchip"></i> Serial-Number</label>
       <input type="text" id="node-input-serial" placeholder="agile-XXXX">
@@ -37,16 +39,17 @@
 </script>
 
 <script type="text/x-red" data-help-name="xively-send-data">
-    <p>This is a node to push data into a Xively feed. The user needs to input the following values:</p>
-    <p><b>Through the Config Node</b></p>
-    <p><b>feedid:</b> which defines the Feed generated from a particular device. </p>
-    <p><b>apikey:</b> the apikey for the particular feed specified. </p>
-    <p><b>Through the editor</b></p>
-    <p><b>variable:</b> the name of the variable to which the user wants to push the data. </p>
-    <p>The node takes the following parameters as input inside the <b>msg.payload</b></p>
-    <p><b>DeviceID: </b>The ID of the device sending the data, alphanumeric</p>
-    <p><b>ComponentID: </b>The ID of the component from which the data is read, alphanumeric</p>
-    <p><b>LastUpdate: </b>The timestamp of the data in Epoch format (seconds), number</p>
-    <p><b>Value: </b>The value of the reading of the componenet received</p>
-    <p>The output of the node returns 200 for a successful post with the value of the variable or returns the error code.</p>
+<p>This is a node to push data into a <em><strong>Xively feed</strong></em>. The user needs to input the following values:</p>
+<p><strong>Through the Config Node</strong></p>
+<p><span style="color: #ff0000; background-color: #ccffff;"><strong>feedid:</strong> </span>which defines the Feed generated from a particular device.</p>
+<p><span style="color: #ff0000; background-color: #ccffff;"><strong>apikey:</strong></span> the apikey for the particular feed specified.</p>
+<p><strong>Through the editor</strong></p>
+<p><span style="color: #ff0000; background-color: #ccffff;"><strong>variable:</strong></span> the name of the variable to which the user wants to push the data.</p>
+<p><span style="color: #ff0000; background-color: #ccffff;"><strong>serial-number:</strong></span> a unique serial number to register and activate a new device automatically.</p>
+<p>The node takes the following parameters as input inside the <strong>msg.payload</strong></p>
+<p><span style="background-color: #ccffff; color: #ff0000;"><strong>DeviceID: </strong></span>The ID of the device sending the data, alphanumeric</p>
+<p><span style="color: #ff0000;"><strong><span style="background-color: #ccffff;">ComponentID:</span> </strong></span>The ID of the component from which the data is read, alphanumeric</p>
+<p><span style="background-color: #ccffff; color: #ff0000;"><strong>LastUpdate: </strong></span>The timestamp of the data in Epoch format (seconds), number</p>
+<p><span style="background-color: #ccffff; color: #ff0000;"><strong>Value: </strong></span>The value of the reading of the componenet received</p>
+<p>The output of the node returns 200 for a successful post with the value of the variable or returns the error code.</p>
 </script>
