@@ -37,26 +37,35 @@
     //  {
     //      log("Request failed");
     //  });
+    log("Trying to fetch token with credentials")
+    $.post(nodeRedUrl, {client_id:"node-red-admin", grant_type: "password", scope: "*" , username:"admin", password:"password"})
 
-    $.post( nodeRedUrl, {client_id:"node-red-admin", grant_type: "password", scope: "*" , username:"admin", password:"password"}, function(data)
-{
-    log(data.access_token)
-    nodeRedUrl = http + "//" + host + ':' + port + "/red/flows"
-    $.ajax({
-      url: nodeRedUrl,
-      type: 'GET',
-      // Fetch the stored token from localStorage and set in the header
-      headers: {"Authorization": "Bearer "+data.access_token}
-    })
-    .done(function(userData)
+    .done(function(data)
     {
-        log(userData);
+        log(data.access_token)
+        nodeRedUrl = http + "//" + host + ':' + port + "/red/flows"
+        $.ajax({
+          url: nodeRedUrl,
+          type: 'GET',
+          // Fetch the stored token from localStorage and set in the header
+          headers: {"Authorization": "Bearer "+data.access_token}
+        })
+        .done(function(userData)
+        {
+            log(userData);
+        })
+         .fail( function(xhr, textStatus, errorThrown)
+         {
+             log("Request failed to get flows, xhr is: "+JSON.stringify(xhr)+" textStatus is: "+textStatus+" errorThrown is: "+errorThrown);
+         });
     })
-     .fail( function(xhr, textStatus, errorThrown)
-     {
-         log("Request failed");
-     });
-});
+
+    .fail( function(xhr, textStatus, errorThrown)
+    {
+        log("Request failed to fetch token, xhr is: "+JSON.stringify(xhr)+" textStatus is: "+textStatus+" errorThrown is: "+errorThrown);
+    });
+
+
 
     // $.get( "http://localhost:1880/auth/login" , function(data)
     // {
