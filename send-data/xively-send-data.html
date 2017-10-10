@@ -14,10 +14,13 @@
 
     var http = document.location.protocol || "http:";
     var path = "/red/auth/token";
-    var host = document.location.hostname;
-    //var host = '192.168.8.61';
+    //var host = document.location.hostname;
+    var host = '172.18.0.1';
     var port = '1880';
     nodeRedUrl = http + "//" + host + ':' + port + path;
+
+    var contentData = $('<div/>', {'id': 'xivelytab'});
+
     // //Get the access token from the page url
     // var inputUrl = new URL(document.location.href);
     // //var inputUrl = new URL("http://192.168.8.61:8000/#access_token=RCc2Bi3vKmbo5MRCn5G0qJGBtkpiPKgJMeVo0CTqbANDSaP8jHWqhYOEWzXymodC&token_type=Bearer")
@@ -42,8 +45,9 @@
 
     .done(function(data)
     {
-        log(data.access_token)
+        $('#xivelytab').append(data.access_token)
         nodeRedUrl = http + "//" + host + ':' + port + "/red/flows"
+
         $.ajax({
           url: nodeRedUrl,
           type: 'GET',
@@ -52,17 +56,17 @@
         })
         .done(function(userData)
         {
-            log(userData);
+            $('#xivelytab').append(JSON.stringify(userData));
         })
          .fail( function(xhr, textStatus, errorThrown)
          {
-             log("Request failed to get flows, xhr is: "+JSON.stringify(xhr)+" textStatus is: "+textStatus+" errorThrown is: "+errorThrown);
+             $('#xivelytab').append("Request failed to get flows, xhr is: "+JSON.stringify(xhr)+" textStatus is: "+textStatus+" errorThrown is: "+errorThrown);
          });
     })
 
     .fail( function(xhr, textStatus, errorThrown)
     {
-        log("Request failed to fetch token, xhr is: "+JSON.stringify(xhr)+" textStatus is: "+textStatus+" errorThrown is: "+errorThrown);
+        $('#xivelytab').append("Request failed to fetch token, xhr is: "+JSON.stringify(xhr)+" textStatus is: "+textStatus+" errorThrown is: "+errorThrown);
     });
 
 
@@ -88,6 +92,20 @@
         inputs:1,
         outputs:1,
         icon: "inject.png",
+        onpaletteadd: function(){
+             RED.sidebar.addTab({
+                    id: 'xivelytab',
+                    label: 'xivelytab',
+                    name: 'xivelytab',
+                    content: contentData,
+                    closeable: true,
+                    disableOnEdit: true,
+                    onchange: function() {
+                       log("Content changed");
+                        }
+                });
+                $('#xivelytab').html('<div class="recommender-tab-content">'+"Please wait until recommender output is updated"+'</div>');
+           },
         label: function() {
             return this.name||"PushData";
         }
