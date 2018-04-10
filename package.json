@@ -16,7 +16,7 @@
     }
   },
   "author": "Koustabh Dolui",
-  "license": "ISC",
+  "license": "EPL-2.0",
   "dependencies": {
     "agile-sdk": "^0.4.4",
     "debug": "^2.6.1",
